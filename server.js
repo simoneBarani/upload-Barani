@@ -3,11 +3,7 @@ const http = require('http');
 const path = require('path');
 const app = express();
 const multer  = require('multer');
-const mysql = require("mysql");
-
-const conf = JSON.parse(fs.readFileSync("conf.json"));
-const connection = mysql.createConnection(conf);
-
+const fs = require('fs');
 
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
@@ -29,7 +25,15 @@ app.post('/upload', (req, res) => {
   })
 });
 
+app.get('/filelist', (req, res) => {
+  const filesDir = path.join(__dirname, "files");
+  fs.readdir(filesDir, (err, files) => {
+      const fileUrls = files.map(file =>` ./files/${file}`);
+      res.json(fileUrls);
+  });
+});
+
 const server = http.createServer(app);
 server.listen(5600, () => {
   console.log("- server running");
-});
+}); 
